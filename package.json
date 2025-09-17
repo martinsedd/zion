@@ -1,0 +1,29 @@
+{
+  "name": "zion",
+  "module": "app/main.ts",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "bun run app/main.tsx",
+    "test": "vitest --config vitest.config.ts",
+    "test:watch": "vitest --watch",
+    "lint": "biome check .",
+    "format": "biome format . --write"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.2.4",
+    "@types/bun": "latest",
+    "@types/react": "^19.1.13",
+    "vitest": "^3.2.4"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "ink": "^6.3.0",
+    "inversify": "^7.10.0",
+    "react": "^19.1.1",
+    "reflect-metadata": "^0.2.2",
+    "winston": "^3.17.0"
+  }
+}
