@@ -1,26 +1,39 @@
 #!/usr/bin/env bun
 
-import { container, TYPES } from "../shared/container";
-import { render, Text, Box } from "ink";
+import { container } from "@shared/container";
+import { TYPES } from "@shared/types/container-types";
+import { render } from "ink";
+import { useState } from "react";
+import { TaskListView } from "ui/views/TaskListView";
 import type { Logger } from "winston";
 
+type AppView = "task-list" | "add-task";
+
 function App() {
+  const [currentView, setCurrentView] = useState<AppView>("task-list");
   const logger = container.get<Logger>(TYPES.Logger);
 
-  logger.info("Zion Task Manager starting up...");
+  const handleAddTask = () => {
+    logger.info("Add task requested");
+  };
 
-  return (
-    <Box flexDirection="column" padding={1}>
-      <Text color="cyan" bold>
-        🏔️ Welcome to Zion Task Manager! 🏔️
-      </Text>
-      <Text color="green">✓ Dependency Injection: Working</Text>
-      <Text color="green">✓ Logging: Working (check logs/zion.log)</Text>
-      <Text color="yellow" dimColor>
-        Press Ctrl+C to exit
-      </Text>
-    </Box>
-  );
+  const handleExit = () => {
+    logger.info("Zion Task Manager shutting down");
+    process.exit(0);
+  };
+
+  switch (currentView) {
+    case "task-list":
+      return <TaskListView onAddTask={handleAddTask} onExit={handleExit} />;
+    case "add-task":
+      // TODO: Implement AddTaskView
+      return <TaskListView onAddTask={handleAddTask} onExit={handleExit} />;
+    default:
+      return <TaskListView onAddTask={handleAddTask} onExit={handleExit} />;
+  }
 }
+
+const logger = container.get<Logger>(TYPES.Logger);
+logger.info("Zion Task Manager starting up...");
 
 render(<App />);
