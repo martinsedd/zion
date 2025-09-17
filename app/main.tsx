@@ -1,20 +1,35 @@
 #!/usr/bin/env bun
-
-import { container } from "@shared/container";
-import { TYPES } from "@shared/types/container-types";
+import "reflect-metadata";
+import React, { useState, useRef } from "react";
 import { render } from "ink";
-import { useState } from "react";
-import { TaskListView } from "ui/views/TaskListView";
+import { TaskListView } from "../ui/views/TaskListView";
+import type { TaskListViewRef } from "../ui/views/TaskListView";
+import { AddTaskView } from "../ui/views/AddTaskView";
+import { container, TYPES } from "@shared/container";
 import type { Logger } from "winston";
 
 type AppView = "task-list" | "add-task";
 
 function App() {
   const [currentView, setCurrentView] = useState<AppView>("task-list");
+  const taskListRef = useRef<TaskListViewRef>(null);
   const logger = container.get<Logger>(TYPES.Logger);
 
   const handleAddTask = () => {
-    logger.info("Add task requested");
+    logger.info("Switching to add task view");
+    setCurrentView("add-task");
+  };
+
+  const handleTaskAdded = () => {
+    logger.info("Task added successfully, returning to task list");
+    setCurrentView("task-list");
+    // Refresh the task list
+    setTimeout(() => taskListRef.current?.refresh(), 100);
+  };
+
+  const handleCancel = () => {
+    logger.info("Add task cancelled, returning to task list");
+    setCurrentView("task-list");
   };
 
   const handleExit = () => {
@@ -24,12 +39,25 @@ function App() {
 
   switch (currentView) {
     case "task-list":
-      return <TaskListView onAddTask={handleAddTask} onExit={handleExit} />;
+      return (
+        <TaskListView
+          ref={taskListRef}
+          onAddTask={handleAddTask}
+          onExit={handleExit}
+        />
+      );
     case "add-task":
-      // TODO: Implement AddTaskView
-      return <TaskListView onAddTask={handleAddTask} onExit={handleExit} />;
+      return (
+        <AddTaskView onTaskAdded={handleTaskAdded} onCancel={handleCancel} />
+      );
     default:
-      return <TaskListView onAddTask={handleAddTask} onExit={handleExit} />;
+      return (
+        <TaskListView
+          ref={taskListRef}
+          onAddTask={handleAddTask}
+          onExit={handleExit}
+        />
+      );
   }
 }
 
